@@ -29,7 +29,7 @@ $DomainUser = "domainuser@contosounilab.com"
 $LocalPassword = "<LOCAL_PASSWORD>"
 $DomainPassword = "<DOMAIN_PASSWORD>"
 # Optional
-$OUPath = "OU=test,DC=onmicrosoft,DC=com"
+$OUPath = "OU=orgunit,DC=onmicrosoft,DC=com"
 
 . ".\Join-AzLabADTemplate.ps1" `
     -DomainServiceAddress $DomainServiceAddress `
@@ -71,11 +71,11 @@ Domain account password.
 #### ***OUPath***
 (Optional) Organization Unit for the specific domain.
 
-## Scripts
 #### ***EnrollMDM***
 (Optional) Whether to enroll the VMs to Intune (for Hybrid AD only).
 
-## Template VM
+## Scripts
+## Executed on the Template VM
 ### ***Join-AzLabADTemplate***
 Main script to be run from the Template VM. It gets details on the currently running Template VM and Lab. It then schedules the scripts chain starting with ***Join-AzLabADStudent_RenameVm.ps1*** and publishes the Lab.
 
@@ -99,6 +99,9 @@ Checks the device is Azure AD joined. If so, it enrolls the VM to Intune using t
 ### ***Set-AzLabADVms (optional)***
 Optional script to be run from the Template VM. It spins up all the VMs leaving enough time for the domain join scripts to be executed before shutting down the VMs.
 
+### ***Set-AzLabCapacity (optional) ***
+Optional script to be run from the Template VM.  The script will set the lab capacity.
+
 ### ***Utils.ps1***
 Utility functions and extensions to the Az.LabServices module.
 
@@ -107,3 +110,4 @@ Utility functions and extensions to the Az.LabServices module.
 - The domain join happens at the first boot of the Student VM. Approximately 2-3 minutes are required for the scripts to execute.
 - Both unclaimed and claimed VMs are joined to the AD domain. For claimed VMs, students can use their university credentials. They can still use the local account credentials if professors provide those credentials.
 - At Lab creation, enabling the option **Use same password for all virtual machines** is preferable. This way, students are not prompted to pick a new password and can use straightaway their university credentials.
+- If you run into issues, each step generates a text file with an errors in the script location.
