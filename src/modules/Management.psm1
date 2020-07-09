@@ -198,4 +198,4 @@ function Download-File {
 }
 
 Export-ModuleMember -Function   Import-RemoteModule,
-                                Download-Module
+                                Download-File
