@@ -79,24 +79,24 @@ $ExitCode = 0
 try {
     
     $ErrorActionPreference = "Stop"
-    
-    #https://raw.githubusercontent.com/RogerBestMsft/azure-devtestlab-activedirectoryjoin/devModules/src/modules/Utils.psm1
-    #. ".\Utils.ps1"
-    #Import-Module ".\modules\Utils.psm1"
-    
-    #Write-Output "Importing AzLab Module"
-    #Import-AzLabModule -Update
-    
+   
     $global:AzLabServicesModuleName = "Az.LabServices.psm1"
     $global:AzLabServicesModuleSource = "https://raw.githubusercontent.com/Azure/azure-devtestlab/master/samples/ClassroomLabs/Modules/Library/"
-    #$global:AzLabServicesModulePath = Join-Path -Path $AzLabServicesModuleSource -ChildPath $AzLabServicesModuleName
 
-    Import-RemoteModule -Source $AzLabServicesModuleSource -ModuleName $AzLabServicesModuleName
-
+    $global:AzLabServicesUtilManagementName = "Management.psm1"
     $global:AzLabServicesUtilName = "Utils.psm1"
     $global:AzLabServicesUtilSource = "https://raw.githubusercontent.com/RogerBestMsft/azure-devtestlab-activedirectoryjoin/devModules/src/modules/"
 
-    Import-RemoteModule -Source $global:AzLabServicesUtilSource -ModuleName $global:AzLabServicesUtilName
+    # Load Management module
+    $source = $AzLabServicesUtilSource + $AzLabServicesUtilManagementName
+    $target = Join-Path -Path (Resolve-Path ./) -ChildPath $AzLabServicesUtilManagementName
+    $WebClient = New-Object System.Net.WebClient
+    $WebClient.DownloadFile($source, $target)
+    Import-Module $target -Global
+
+    # Load Utils and Az.LabServices modules
+    Import-RemoteModule -Source $AzLabServicesModuleSource -ModuleName $AzLabServicesModuleName
+    Import-RemoteModule -Source $AzLabServicesUtilSource -ModuleName $AzLabServicesUtilName
 
     # TODO Download secondary scripts
     $global:AzLabServicesScriptsSource = "https://raw.githubusercontent.com/RogerBestMsft/azure-devtestlab-activedirectoryjoin/devModules/src/scripts/"
@@ -106,10 +106,10 @@ try {
     $global:JoinAzLabADStudentEnrollMDMScriptName = "Join-AzLabADStudent_EnrollMDM.ps1"
 
     #$modulePath = Join-Path -Path (Resolve-Path ./) -ChildPath $ModuleName
-    Download-Scripts -ModuleName $JoinAzLabADStudentRenameVmScriptName -Source $AzLabServicesScriptsSource -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentRenameVmScriptName)
-    Download-Scripts -ModuleName $JoinAzLabADStudentJoinVmScriptName -Source $AzLabServicesScriptsSource -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentJoinVmScriptName)
-    Download-Scripts -ModuleName $JoinAzLabADStudentAddStudentScriptName -Source $AzLabServicesScriptsSource -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentAddStudentScriptName)
-    Download-Scripts -ModuleName $JoinAzLabADStudentEnrollMDMScriptName -Source $AzLabServicesScriptsSource -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentEnrollMDMScriptName)
+    Download-Scripts -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentRenameVmScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentRenameVmScriptName)
+    Download-Scripts -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentJoinVmScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentJoinVmScriptName)
+    Download-Scripts -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentAddStudentScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentAddStudentScriptName)
+    Download-Scripts -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentEnrollMDMScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentEnrollMDMScriptName)
 #
 
     Write-Output "Getting information on the currently running Template VM"
@@ -168,48 +168,48 @@ finally {
     exit $ExitCode
 }
 
-function Import-RemoteModule {
-    param(
-        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Web source of the psm1 file")]
-        [ValidateNotNullOrEmpty()]
-        [string] $Source,
-        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the module")]
-        [ValidateNotNullOrEmpty()]
-        [string] $ModuleName,
-        [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true, HelpMessage = "Whether to update and replace an existing psm1 file")]
-        [switch]
-        $Update = $false
-    )
+# function Import-RemoteModule {
+#     param(
+#         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Web source of the psm1 file")]
+#         [ValidateNotNullOrEmpty()]
+#         [string] $Source,
+#         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the module")]
+#         [ValidateNotNullOrEmpty()]
+#         [string] $ModuleName,
+#         [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true, HelpMessage = "Whether to update and replace an existing psm1 file")]
+#         [switch]
+#         $Update = $false
+#     )
   
-    $modulePath = Join-Path -Path (Resolve-Path ./) -ChildPath $ModuleName
+#     $modulePath = Join-Path -Path (Resolve-Path ./) -ChildPath $ModuleName
   
-    if ($Update -Or !(Test-Path -Path $modulePath)) {
+#     if ($Update -Or !(Test-Path -Path $modulePath)) {
 
-        Download-Scripts -Source $Source -ModuleName $ModuleName -ModulePath $modulePath
-        #Remove-Item -Path $modulePath -ErrorAction SilentlyContinue
+#         Download-Scripts -Source $Source -ModuleName $ModuleName -ModulePath $modulePath
+#         #Remove-Item -Path $modulePath -ErrorAction SilentlyContinue
 
-        #$WebClient = New-Object System.Net.WebClient
-        #WebClient.DownloadFile($Source, $modulePath)
-    }
+#         #$WebClient = New-Object System.Net.WebClient
+#         #WebClient.DownloadFile($Source, $modulePath)
+#     }
     
-    Import-Module $modulePath
-}
+#     Import-Module $modulePath
+# }
 
-function Download-Scripts {
-    param(
-        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Web source of the psm1 file")]
-        [ValidateNotNullOrEmpty()]
-        [string] $Source,
-        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the module")]
-        [ValidateNotNullOrEmpty()]
-        [string] $ModuleName,
-        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the module")]
-        [ValidateNotNullOrEmpty()]
-        [string] $ModulePath
-    )
+# function Download-Scripts {
+#     param(
+#         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Web source of the psm1 file")]
+#         [ValidateNotNullOrEmpty()]
+#         [string] $Source,
+#         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the module")]
+#         [ValidateNotNullOrEmpty()]
+#         [string] $ModuleName,
+#         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the module")]
+#         [ValidateNotNullOrEmpty()]
+#         [string] $ModulePath
+#     )
 
-    Remove-Item -Path $ModulePath -ErrorAction SilentlyContinue
+#     Remove-Item -Path $ModulePath -ErrorAction SilentlyContinue
 
-    $WebClient = New-Object System.Net.WebClient
-    $WebClient.DownloadFile($Source, $ModulePath)
-}
+#     $WebClient = New-Object System.Net.WebClient
+#     $WebClient.DownloadFile($Source, $ModulePath)
+# }

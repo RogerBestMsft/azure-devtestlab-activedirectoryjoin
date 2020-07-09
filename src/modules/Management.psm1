@@ -166,7 +166,7 @@ function Import-RemoteModule {
                 Download-Module $moduleSource $modulePath
             }
    
-            Import-Module $modulePath
+            Import-Module $modulePath -Global
         }
         catch {
             Write-Error -ErrorRecord $_ -EA $callerEA
