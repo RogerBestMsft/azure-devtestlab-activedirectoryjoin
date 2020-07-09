@@ -212,7 +212,11 @@ function Write-LogFile {
 
             Add-content -Path $Logfile -Value $Line -ErrorAction SilentlyContinue
 
+<<<<<<< HEAD
             #Write-Output "Message: '$Message' has been logged to file: $LogFile"
+=======
+            Write-Output "Message: '$Message' has been logged to file: $LogFile"
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
         }
         catch {
 
@@ -228,20 +232,35 @@ function Write-DebugFile {
         [string] $Message
     )
 
+<<<<<<< HEAD
     begin { . BeginPreamble }
     process {
         try {
+=======
+    begin { . BeginPreamble }
+    process {
+        try {
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
 
 
             if ($DebugPreference -eq 'Continue') {
                 Write-LogFile($Message)
             }
+<<<<<<< HEAD
         }
         catch {
             #Write-Error -ErrorRecord $_ -EA $callerEA
             Write-LogFile $_
         }
     }
+=======
+        }
+        catch {
+            #Write-Error -ErrorRecord $_ -EA $callerEA
+            Write-LogFile $_
+        }
+    }
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
     end{}
 }
 
@@ -294,9 +313,15 @@ function Register-ScheduledScriptTask {
         $Restart = $false
     )
 
+<<<<<<< HEAD
     begin { . BeginPreamble }
     process {
         try {
+=======
+    begin { . BeginPreamble }
+    process {
+        try {
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
 
             $scriptDirectory = Split-Path $ScriptPath
     
@@ -349,12 +374,21 @@ function Register-ScheduledScriptTask {
             }
 
             Register-ScheduledTask @params
+<<<<<<< HEAD
         }
         catch {
             #Write-Error -ErrorRecord $_ -EA $callerEA
             Write-LogFile $_
         }
     }
+=======
+        }
+        catch {
+            #Write-Error -ErrorRecord $_ -EA $callerEA
+            Write-LogFile $_
+        }
+    }
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
     end{}
 }
 
@@ -409,9 +443,15 @@ function Register-AzLabADStudentTask {
         [string]
         $ScriptName
     )
+<<<<<<< HEAD
     begin { . BeginPreamble }
     process {
         try {
+=======
+    begin { . BeginPreamble }
+    process {
+        try {
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
 
             # Serialize arguments for the scheduled startup script
             $domainServiceAddressStr = New-SerializedStringArray $DomainServiceAddress
@@ -445,12 +485,21 @@ function Register-AzLabADStudentTask {
                     -LocalUser $LocalUser `
                     -LocalPassword $LocalPassword `
                     -EventTrigger Startup
+<<<<<<< HEAD
         }
         catch {
             #Write-Error -ErrorRecord $_ -EA $callerEA
             Write-LogFile $_
         }
     }
+=======
+        }
+        catch {
+            #Write-Error -ErrorRecord $_ -EA $callerEA
+            Write-LogFile $_
+        }
+    }
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
     end{}
 }
 
@@ -464,8 +513,13 @@ function Get-UniqueStudentVmName {
         [string] $StudentVmName
     )
 
+<<<<<<< HEAD
     begin { . BeginPreamble }
     process {
+=======
+    begin { . BeginPreamble }
+    process {
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
         try {
             $TemplateVmId = $TemplateVmName.Replace("ML-RefVm-", "")
             $StudentVmId = $StudentVmName.Replace("ML-EnvVm-", "")
@@ -480,18 +534,32 @@ function Get-UniqueStudentVmName {
 
             # Computer name cannot start with a digit. Prepending a 'M'. Last digit of $TemplateVmId is left out.
             return "M" + $StudentVmId + $TemplateVmId
+<<<<<<< HEAD
         }
         catch {
             #Write-Error -ErrorRecord $_ -EA $callerEA
             Write-LogFile $_
         }
     }
+=======
+        }
+        catch {
+            #Write-Error -ErrorRecord $_ -EA $callerEA
+            Write-LogFile $_
+        }
+    }
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
     end{}
 }
 
 function Get-AzLabCurrentTemplateVm {
+<<<<<<< HEAD
     begin { . BeginPreamble }
     process {
+=======
+    begin { . BeginPreamble }
+    process {
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
         try {
             # The Azure Instance Metadata Service (IMDS) provides information about currently running virtual machine instances
             $computeVmId = Invoke-RestMethod -Headers @{"Metadata" = "true" } -URI "http://169.254.169.254/metadata/instance/compute/vmId?api-version=2019-11-01&format=text" -Method Get -TimeoutSec 5 
@@ -504,17 +572,27 @@ function Get-AzLabCurrentTemplateVm {
             }
 
             return $templateVm
+<<<<<<< HEAD
         }
         catch {
             #Write-Error -ErrorRecord $_ -EA $callerEA
             Write-LogFile $_
         }
     }
+=======
+        }
+        catch {
+            #Write-Error -ErrorRecord $_ -EA $callerEA
+            Write-LogFile $_
+        }
+    }
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
     end{}
 }
 
 # Ideally to be used only once from the Template if we don't uniquely know the Lab. O(LA*LAB*VM)
 function Get-AzLabCurrentStudentVm {
+<<<<<<< HEAD
     begin { . BeginPreamble }
     process {
         try {
@@ -536,16 +614,33 @@ function Get-AzLabCurrentStudentVm {
         }
     }
     end{}
+=======
+    # The Azure Instance Metadata Service (IMDS) provides information about currently running virtual machine instances
+    $computeVmId = Invoke-RestMethod -Headers @{"Metadata" = "true" } -URI "http://169.254.169.254/metadata/instance/compute/vmId?api-version=2019-11-01&format=text" -Method Get -TimeoutSec 5 
+    # Correlate by VM id
+    $studentVm = Get-AzLabAccount | Get-AzLab | Get-AzLabVm | Where-Object { $_.properties.resourceSets.computeVmId -eq $computeVmId }
+
+    if ($null -eq $studentVm) {
+        # Script was run from a Student VM or another VM outside of this Lab.
+        throw "Script must be run from a Student VM"
+    }
+
+    return $studentVm
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
 }
 
 # To be used from the Student VM where we already know the Lab. O(VM)
 function Get-AzLabCurrentStudentVmFromLab {
+<<<<<<< HEAD
     [CmdletBinding()]
+=======
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
     param(
         [parameter(Mandatory = $true, ValueFromPipeline = $true, HelpMessage = "VM claimed by user")]
         [ValidateNotNullOrEmpty()]
         $Lab
     )
+<<<<<<< HEAD
     begin { . BeginPreamble }
     process {
         try {
@@ -571,6 +666,22 @@ function Get-AzLabCurrentStudentVmFromLab {
 
 function Get-AzLabUserForCurrentVm {
     [CmdletBinding()]
+=======
+    # The Azure Instance Metadata Service (IMDS) provides information about currently running virtual machine instances
+    $computeVmId = Invoke-RestMethod -Headers @{"Metadata" = "true" } -URI "http://169.254.169.254/metadata/instance/compute/vmId?api-version=2019-11-01&format=text" -Method Get -TimeoutSec 5 
+    # Correlate by VM id
+    $studentVm = $Lab | Get-AzLabVm | Where-Object { $_.properties.resourceSets.computeVmId -eq $computeVmId }
+
+    if ($null -eq $studentVm) {
+        # Script was run from a Student VM or another VM outside of this Lab.
+        throw "Script must be run from a Student VM"
+    }
+
+    return $studentVm
+}
+
+function Get-AzLabUserForCurrentVm {
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
     param(
         [parameter(Mandatory = $true, ValueFromPipeline = $true, HelpMessage = "Lab")]
         [ValidateNotNullOrEmpty()]
@@ -580,6 +691,7 @@ function Get-AzLabUserForCurrentVm {
         [ValidateNotNullOrEmpty()]
         $Vm
     )
+<<<<<<< HEAD
     begin { . BeginPreamble }
     process {
         try {
@@ -595,11 +707,19 @@ function Get-AzLabUserForCurrentVm {
 
 function Get-AzLabTemplateVmName {
     [CmdletBinding()]
+=======
+
+    $Lab | Get-AzLabUser | Where-Object { $_.name -eq $Vm.properties.claimedByUserPrincipalId }
+}
+
+function Get-AzLabTemplateVmName {
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
     param(
         [parameter(Mandatory = $true, ValueFromPipeline = $true, HelpMessage = "Template VM")]
         [ValidateNotNullOrEmpty()]
         $TemplateVm
     )
+<<<<<<< HEAD
     begin { . BeginPreamble }
     process {
         try {
@@ -633,11 +753,27 @@ function Get-AzureADJoinStatus {
 
 function Join-DeviceMDM {
     [CmdletBinding()]
+=======
+
+    $results = $TemplateVm.properties.resourceSettings.referenceVm.vmResourceId | Select-String -Pattern '([^/]*)$'
+    $results.Matches.Value | Select-Object -Index 0
+}
+
+function Get-AzureADJoinStatus {
+    $status = dsregcmd /status 
+    $status.Replace(":", ' ') | 
+        ForEach-Object { $_.Trim() }  | 
+        ConvertFrom-String -PropertyNames 'State', 'Status'
+} 
+
+function Join-DeviceMDM {
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
     param(
         [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true, HelpMessage = "Whether to restart the system upon succesful completion")]
         [switch]
         $UseAADDeviceCredential = $false
     )
+<<<<<<< HEAD
     begin { . BeginPreamble }
     process {
         try {
@@ -653,6 +789,14 @@ function Join-DeviceMDM {
         }
     }
     end{}
+=======
+
+    if ($UseAADDeviceCredential){
+        . "$env:windir\system32\deviceenroller.exe" /c /AutoEnrollMDMUsingAADDeviceCredential
+    } else {
+        . "$env:windir\system32\deviceenroller.exe" /c /AutoEnrollMDM
+    }
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
 }
 
 function New-SerializedStringArray {
@@ -668,6 +812,7 @@ function New-SerializedStringArray {
     }
 
     return $ArrayStr
+<<<<<<< HEAD
 }
 
 Export-ModuleMember -Function   Join-DeviceMDM,
@@ -683,3 +828,6 @@ Export-ModuleMember -Function   Join-DeviceMDM,
                                 Get-AzLabUserForCurrentVm,
                                 Get-AzLabTemplateVmName,
                                 Get-AzureADJoinStatus
+=======
+}
+>>>>>>> 089497fb5e634fd7986704fe0b5a69306904b45c
