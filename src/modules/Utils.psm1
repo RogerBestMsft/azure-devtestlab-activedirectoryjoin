@@ -10,6 +10,7 @@ $AzLabServicesModuleSource = "https://raw.githubusercontent.com/Azure/azure-devt
 $global:AzLabServicesModulePath = Join-Path -Path (Resolve-Path ./) -ChildPath $AzLabServicesModuleName
 
 # TODO Download secondary scripts
+$global:AzLabServicesScriptsSource = "https://raw.githubusercontent.com/RogerBestMsft/azure-devtestlab-activedirectoryjoin/devModules/src/scripts/"
 $global:JoinAzLabADStudentRenameVmScriptName = "Join-AzLabADStudent_RenameVm.ps1"
 $global:JoinAzLabADStudentJoinVmScriptName = "Join-AzLabADStudent_JoinVm.ps1"
 $global:JoinAzLabADStudentAddStudentScriptName = "Join-AzLabADStudent_AddStudent.ps1"
@@ -211,7 +212,7 @@ function Write-LogFile {
 
             Add-content -Path $Logfile -Value $Line -ErrorAction SilentlyContinue
 
-            Write-Output "Message: '$Message' has been logged to file: $LogFile"
+            #Write-Output "Message: '$Message' has been logged to file: $LogFile"
         }
         catch {
 
@@ -514,40 +515,62 @@ function Get-AzLabCurrentTemplateVm {
 
 # Ideally to be used only once from the Template if we don't uniquely know the Lab. O(LA*LAB*VM)
 function Get-AzLabCurrentStudentVm {
-    # The Azure Instance Metadata Service (IMDS) provides information about currently running virtual machine instances
-    $computeVmId = Invoke-RestMethod -Headers @{"Metadata" = "true" } -URI "http://169.254.169.254/metadata/instance/compute/vmId?api-version=2019-11-01&format=text" -Method Get -TimeoutSec 5 
-    # Correlate by VM id
-    $studentVm = Get-AzLabAccount | Get-AzLab | Get-AzLabVm | Where-Object { $_.properties.resourceSets.computeVmId -eq $computeVmId }
+    begin { . BeginPreamble }
+    process {
+        try {
+            # The Azure Instance Metadata Service (IMDS) provides information about currently running virtual machine instances
+            $computeVmId = Invoke-RestMethod -Headers @{"Metadata" = "true" } -URI "http://169.254.169.254/metadata/instance/compute/vmId?api-version=2019-11-01&format=text" -Method Get -TimeoutSec 5 
+            # Correlate by VM id
+            $studentVm = Get-AzLabAccount | Get-AzLab | Get-AzLabVm | Where-Object { $_.properties.resourceSets.computeVmId -eq $computeVmId }
 
-    if ($null -eq $studentVm) {
-        # Script was run from a Student VM or another VM outside of this Lab.
-        throw "Script must be run from a Student VM"
+            if ($null -eq $studentVm) {
+                # Script was run from a Student VM or another VM outside of this Lab.
+                throw "Script must be run from a Student VM"
+            }
+
+            return $studentVm
+        }
+        catch {
+            #Write-Error -ErrorRecord $_ -EA $callerEA
+            Write-LogFile $_
+        }
     }
-
-    return $studentVm
+    end{}
 }
 
 # To be used from the Student VM where we already know the Lab. O(VM)
 function Get-AzLabCurrentStudentVmFromLab {
+    [CmdletBinding()]
     param(
         [parameter(Mandatory = $true, ValueFromPipeline = $true, HelpMessage = "VM claimed by user")]
         [ValidateNotNullOrEmpty()]
         $Lab
     )
-    # The Azure Instance Metadata Service (IMDS) provides information about currently running virtual machine instances
-    $computeVmId = Invoke-RestMethod -Headers @{"Metadata" = "true" } -URI "http://169.254.169.254/metadata/instance/compute/vmId?api-version=2019-11-01&format=text" -Method Get -TimeoutSec 5 
-    # Correlate by VM id
-    $studentVm = $Lab | Get-AzLabVm | Where-Object { $_.properties.resourceSets.computeVmId -eq $computeVmId }
+    begin { . BeginPreamble }
+    process {
+        try {
+            # The Azure Instance Metadata Service (IMDS) provides information about currently running virtual machine instances
+            $computeVmId = Invoke-RestMethod -Headers @{"Metadata" = "true" } -URI "http://169.254.169.254/metadata/instance/compute/vmId?api-version=2019-11-01&format=text" -Method Get -TimeoutSec 5 
+            # Correlate by VM id
+            $studentVm = $Lab | Get-AzLabVm | Where-Object { $_.properties.resourceSets.computeVmId -eq $computeVmId }
 
-    if ($null -eq $studentVm) {
-        # Script was run from a Student VM or another VM outside of this Lab.
-        throw "Script must be run from a Student VM"
+            if ($null -eq $studentVm) {
+                # Script was run from a Student VM or another VM outside of this Lab.
+                throw "Script must be run from a Student VM"
+            }
+
+            return $studentVm
+        }
+        catch {
+            #Write-Error -ErrorRecord $_ -EA $callerEA
+            Write-LogFile $_
+        }
     }
-
-    return $studentVm
+    end{}
 }
 
 function Get-AzLabUserForCurrentVm {
+    [CmdletBinding()]
     param(
         [parameter(Mandatory = $true, ValueFromPipeline = $true, HelpMessage = "Lab")]
         [ValidateNotNullOrEmpty()]
@@ -557,40 +580,79 @@ function Get-AzLabUserForCurrentVm {
         [ValidateNotNullOrEmpty()]
         $Vm
     )
-
-    $Lab | Get-AzLabUser | Where-Object { $_.name -eq $Vm.properties.claimedByUserPrincipalId }
+    begin { . BeginPreamble }
+    process {
+        try {
+            $Lab | Get-AzLabUser | Where-Object { $_.name -eq $Vm.properties.claimedByUserPrincipalId }
+        }
+        catch {
+            #Write-Error -ErrorRecord $_ -EA $callerEA
+            Write-LogFile $_
+        }
+    }
+    end{}
 }
 
 function Get-AzLabTemplateVmName {
+    [CmdletBinding()]
     param(
         [parameter(Mandatory = $true, ValueFromPipeline = $true, HelpMessage = "Template VM")]
         [ValidateNotNullOrEmpty()]
         $TemplateVm
     )
-
-    $results = $TemplateVm.properties.resourceSettings.referenceVm.vmResourceId | Select-String -Pattern '([^/]*)$'
-    $results.Matches.Value | Select-Object -Index 0
+    begin { . BeginPreamble }
+    process {
+        try {
+            $results = $TemplateVm.properties.resourceSettings.referenceVm.vmResourceId | Select-String -Pattern '([^/]*)$'
+            $results.Matches.Value | Select-Object -Index 0
+        }
+        catch {
+            #Write-Error -ErrorRecord $_ -EA $callerEA
+            Write-LogFile $_
+        }
+    }
+    end{}
 }
 
 function Get-AzureADJoinStatus {
-    $status = dsregcmd /status 
-    $status.Replace(":", ' ') | 
-        ForEach-Object { $_.Trim() }  | 
-        ConvertFrom-String -PropertyNames 'State', 'Status'
+    begin { . BeginPreamble }
+    process {
+        try {
+            $status = dsregcmd /status 
+            $status.Replace(":", ' ') | 
+                ForEach-Object { $_.Trim() }  | 
+                ConvertFrom-String -PropertyNames 'State', 'Status'
+        }
+        catch {
+            #Write-Error -ErrorRecord $_ -EA $callerEA
+            Write-LogFile $_
+        }
+    }
+    end{}
 } 
 
 function Join-DeviceMDM {
+    [CmdletBinding()]
     param(
         [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true, HelpMessage = "Whether to restart the system upon succesful completion")]
         [switch]
         $UseAADDeviceCredential = $false
     )
-
-    if ($UseAADDeviceCredential){
-        . "$env:windir\system32\deviceenroller.exe" /c /AutoEnrollMDMUsingAADDeviceCredential
-    } else {
-        . "$env:windir\system32\deviceenroller.exe" /c /AutoEnrollMDM
+    begin { . BeginPreamble }
+    process {
+        try {
+            if ($UseAADDeviceCredential){
+                . "$env:windir\system32\deviceenroller.exe" /c /AutoEnrollMDMUsingAADDeviceCredential
+            } else {
+                . "$env:windir\system32\deviceenroller.exe" /c /AutoEnrollMDM
+            }
+        }
+        catch {
+            #Write-Error -ErrorRecord $_ -EA $callerEA
+            Write-LogFile $_
+        }
     }
+    end{}
 }
 
 function New-SerializedStringArray {
@@ -607,3 +669,17 @@ function New-SerializedStringArray {
 
     return $ArrayStr
 }
+
+Export-ModuleMember -Function   Join-DeviceMDM,
+                                Import-AzLabModule,
+                                Write-LogFile,
+                                Write-DebugFile,
+                                Register-ScheduledScriptTask,
+                                Register-AzLabADStudentTask,
+                                Get-UniqueStudentVmName,
+                                Get-AzLabCurrentTemplateVm,
+                                Get-AzLabCurrentStudentVm,
+                                Get-AzLabCurrentStudentVmFromLab,
+                                Get-AzLabUserForCurrentVm,
+                                Get-AzLabTemplateVmName,
+                                Get-AzureADJoinStatus
