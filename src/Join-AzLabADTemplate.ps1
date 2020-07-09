@@ -106,10 +106,10 @@ try {
     $global:JoinAzLabADStudentEnrollMDMScriptName = "Join-AzLabADStudent_EnrollMDM.ps1"
 
     #$modulePath = Join-Path -Path (Resolve-Path ./) -ChildPath $ModuleName
-    Download-Scripts -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentRenameVmScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentRenameVmScriptName)
-    Download-Scripts -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentJoinVmScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentJoinVmScriptName)
-    Download-Scripts -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentAddStudentScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentAddStudentScriptName)
-    Download-Scripts -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentEnrollMDMScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentEnrollMDMScriptName)
+    Download-File -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentRenameVmScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentRenameVmScriptName)
+    Download-File -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentJoinVmScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentJoinVmScriptName)
+    Download-File -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentAddStudentScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentAddStudentScriptName)
+    Download-File -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentEnrollMDMScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentEnrollMDMScriptName)
 #
 
     Write-Output "Getting information on the currently running Template VM"

@@ -159,11 +159,7 @@ function Import-RemoteModule {
 
             if ($Update -Or !(Test-Path -Path $modulePath)) {
 
-                # Remove-Item -Path $modulePath -ErrorAction SilentlyContinue
-
-                # $WebClient = New-Object System.Net.WebClient
-                # $WebClient.DownloadFile($Source, $modulePath)
-                Download-Module $moduleSource $modulePath
+                Download-File $moduleSource $modulePath
             }
    
             Import-Module $modulePath -Global
@@ -175,7 +171,7 @@ function Import-RemoteModule {
     end {}
 }
 
-function Download-Module {
+function Download-File {
     [CmdletBinding()]
     param(
         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Web source of the psm1 file")]
