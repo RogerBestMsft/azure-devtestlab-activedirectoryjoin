@@ -5,12 +5,12 @@ Set-StrictMode -Version Latest
 #requires -Version 3.0
 
 # AzLab Module dependency
-$AzLabServicesModuleName = "Az.LabServices.psm1"
-$AzLabServicesModuleSource = "https://raw.githubusercontent.com/Azure/azure-devtestlab/master/samples/ClassroomLabs/Modules/Library/Az.LabServices.psm1"
-$global:AzLabServicesModulePath = Join-Path -Path (Resolve-Path ./) -ChildPath $AzLabServicesModuleName
+#$AzLabServicesModuleName = "Az.LabServices.psm1"
+#$AzLabServicesModuleSource = "https://raw.githubusercontent.com/Azure/azure-devtestlab/master/samples/ClassroomLabs/Modules/Library/Az.LabServices.psm1"
+#$global:AzLabServicesModulePath = Join-Path -Path (Resolve-Path ./) -ChildPath $AzLabServicesModuleName
 
 # TODO Download secondary scripts
-$global:AzLabServicesScriptsSource = "https://raw.githubusercontent.com/RogerBestMsft/azure-devtestlab-activedirectoryjoin/devModules/src/scripts/"
+#$global:AzLabServicesScriptsSource = "https://raw.githubusercontent.com/RogerBestMsft/azure-devtestlab-activedirectoryjoin/devModules/src/scripts/"
 $global:JoinAzLabADStudentRenameVmScriptName = "Join-AzLabADStudent_RenameVm.ps1"
 $global:JoinAzLabADStudentJoinVmScriptName = "Join-AzLabADStudent_JoinVm.ps1"
 $global:JoinAzLabADStudentAddStudentScriptName = "Join-AzLabADStudent_AddStudent.ps1"
@@ -139,52 +139,52 @@ function Get-CallerPreference {
 
 } # function Get-CallerPreference
 
-function Import-RemoteModule {
-    param(
-        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Web source of the psm1 file")]
-        [ValidateNotNullOrEmpty()]
-        [string] $Source,
-        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the module")]
-        [ValidateNotNullOrEmpty()]
-        [string] $ModuleName,
-        [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true, HelpMessage = "Whether to update and replace an existing psm1 file")]
-        [switch]
-        $Update = $false
-    )
+#function Import-RemoteModule {
+#    param(
+#        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Web source of the psm1 file")]
+#        [ValidateNotNullOrEmpty()]
+#        [string] $Source,
+#        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the module")]
+#        [ValidateNotNullOrEmpty()]
+#        [string] $ModuleName,
+#        [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true, HelpMessage = "Whether to update and replace an existing psm1 file")]
+#        [switch]
+#        $Update = $false
+#    )
+#  
+#    $modulePath = Join-Path -Path (Resolve-Path ./) -ChildPath $ModuleName
+#  
+#    if ($Update -Or !(Test-Path -Path $modulePath)) {
+#
+#        Remove-Item -Path $modulePath -ErrorAction SilentlyContinue
+#
+#        $WebClient = New-Object System.Net.WebClient
+#        $WebClient.DownloadFile($Source, $modulePath)
+#    }
+#    
+#    Import-Module $modulePath
+#}
   
-    $modulePath = Join-Path -Path (Resolve-Path ./) -ChildPath $ModuleName
-  
-    if ($Update -Or !(Test-Path -Path $modulePath)) {
-
-        Remove-Item -Path $modulePath -ErrorAction SilentlyContinue
-
-        $WebClient = New-Object System.Net.WebClient
-        $WebClient.DownloadFile($Source, $modulePath)
-    }
-    
-    Import-Module $modulePath
-}
-  
-function Import-AzLabModule {
-    [CmdletBinding()]
-    param(
-        [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true, HelpMessage = "Whether to update an existing Az.LabServices module")]
-        [switch]
-        $Update = $false
-    )
-
-    begin { . BeginPreamble }
-    process {
-        try {
-            Import-RemoteModule -Source $AzLabServicesModuleSource -ModuleName $AzLabServicesModuleName -Update:$Update
-        }
-        catch {
-            #Write-Error -ErrorRecord $_ -EA $callerEA
-            Write-LogFile $_
-        }
-    }
-    end{}
-}
+#function Import-AzLabModule {
+#    [CmdletBinding()]
+#    param(
+#        [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true, HelpMessage = "Whether to update an existing Az.LabServices module")]
+#        [switch]
+#        $Update = $false
+#    )
+#
+#    begin { . BeginPreamble }
+#    process {
+#        try {
+#            Import-RemoteModule -Source $AzLabServicesModuleSource -ModuleName $AzLabServicesModuleName -Update:$Update
+#        }
+#        catch {
+#            #Write-Error -ErrorRecord $_ -EA $callerEA
+#            Write-LogFile $_
+#        }
+#    }
+#    end{}
+#}
 
 function Write-LogFile {
     [CmdletBinding()]
