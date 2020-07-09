@@ -1,3 +1,11 @@
+<#
+The MIT License (MIT)
+Copyright (c) Microsoft Corporation  
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.  
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+#>
+
 # We are using strict mode for added safety
 Set-StrictMode -Version Latest
 
@@ -138,53 +146,6 @@ function Get-CallerPreference {
     } # end
 
 } # function Get-CallerPreference
-
-#function Import-RemoteModule {
-#    param(
-#        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Web source of the psm1 file")]
-#        [ValidateNotNullOrEmpty()]
-#        [string] $Source,
-#        [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the module")]
-#        [ValidateNotNullOrEmpty()]
-#        [string] $ModuleName,
-#        [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true, HelpMessage = "Whether to update and replace an existing psm1 file")]
-#        [switch]
-#        $Update = $false
-#    )
-#  
-#    $modulePath = Join-Path -Path (Resolve-Path ./) -ChildPath $ModuleName
-#  
-#    if ($Update -Or !(Test-Path -Path $modulePath)) {
-#
-#        Remove-Item -Path $modulePath -ErrorAction SilentlyContinue
-#
-#        $WebClient = New-Object System.Net.WebClient
-#        $WebClient.DownloadFile($Source, $modulePath)
-#    }
-#    
-#    Import-Module $modulePath
-#}
-  
-#function Import-AzLabModule {
-#    [CmdletBinding()]
-#    param(
-#        [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true, HelpMessage = "Whether to update an existing Az.LabServices module")]
-#        [switch]
-#        $Update = $false
-#    )
-#
-#    begin { . BeginPreamble }
-#    process {
-#        try {
-#            Import-RemoteModule -Source $AzLabServicesModuleSource -ModuleName $AzLabServicesModuleName -Update:$Update
-#        }
-#        catch {
-#            #Write-Error -ErrorRecord $_ -EA $callerEA
-#            Write-LogFile $_
-#        }
-#    }
-#    end{}
-#}
 
 function Write-LogFile {
     [CmdletBinding()]
@@ -671,7 +632,6 @@ function New-SerializedStringArray {
 }
 
 Export-ModuleMember -Function   Join-DeviceMDM,
-                                Import-AzLabModule,
                                 Write-LogFile,
                                 Write-DebugFile,
                                 Register-ScheduledScriptTask,
