@@ -12,8 +12,12 @@ Set-StrictMode -Version Latest
 # We require a relatively new version of Powershell
 #requires -Version 3.0
 
+# Secondary modules
+$global:AzLabADUtils = "Utils.psm1"
+$global:AzLabADManagement = "Management.psm1"
+
 # AzLab Module dependency
-#$AzLabServicesModuleName = "Az.LabServices.psm1"
+$global:AzLabServicesModuleName = "Az.LabServices.psm1"
 #$AzLabServicesModuleSource = "https://raw.githubusercontent.com/Azure/azure-devtestlab/master/samples/ClassroomLabs/Modules/Library/Az.LabServices.psm1"
 #$global:AzLabServicesModulePath = Join-Path -Path (Resolve-Path ./) -ChildPath $AzLabServicesModuleName
 

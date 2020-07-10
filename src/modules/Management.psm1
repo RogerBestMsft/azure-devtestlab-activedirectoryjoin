@@ -159,7 +159,7 @@ function Import-RemoteModule {
 
             if ($Update -Or !(Test-Path -Path $modulePath)) {
 
-                Download-File $moduleSource $modulePath
+                Get-FileFromURI $moduleSource $modulePath
             }
    
             Import-Module $modulePath -Global
@@ -171,7 +171,7 @@ function Import-RemoteModule {
     end {}
 }
 
-function Download-File {
+function Get-FileFromURI {
     [CmdletBinding()]
     param(
         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Web source of the psm1 file")]
@@ -198,4 +198,4 @@ function Download-File {
 }
 
 Export-ModuleMember -Function   Import-RemoteModule,
-                                Download-File
+                                Get-FileFromURI

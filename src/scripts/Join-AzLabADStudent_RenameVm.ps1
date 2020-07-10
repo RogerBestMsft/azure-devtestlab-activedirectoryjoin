@@ -108,7 +108,9 @@ try {
     $ErrorActionPreference = "Stop"
 
     #. ".\Utils.ps1"
-    # Import-Module ".\modules\Utils.psm1"
+    Import-Module $global:AzLabADManagement
+    Import-Module $global:AzLabADUtils
+    Import-Module $global:AzLabServicesModuleName
     
     #Write-LogFile "Importing AzLab Module"
     #Import-AzLabModule

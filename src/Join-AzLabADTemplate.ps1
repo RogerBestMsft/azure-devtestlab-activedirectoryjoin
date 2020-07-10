@@ -80,12 +80,12 @@ try {
     
     $ErrorActionPreference = "Stop"
    
-    $global:AzLabServicesModuleName = "Az.LabServices.psm1"
-    $global:AzLabServicesModuleSource = "https://raw.githubusercontent.com/Azure/azure-devtestlab/master/samples/ClassroomLabs/Modules/Library/"
+    #$global:AzLabServicesModuleName = "Az.LabServices.psm1"
+    $AzLabServicesModuleSource = "https://raw.githubusercontent.com/Azure/azure-devtestlab/master/samples/ClassroomLabs/Modules/Library/"
 
-    $global:AzLabServicesUtilManagementName = "Management.psm1"
-    $global:AzLabServicesUtilName = "Utils.psm1"
-    $global:AzLabServicesUtilSource = "https://raw.githubusercontent.com/RogerBestMsft/azure-devtestlab-activedirectoryjoin/devModules/src/modules/"
+    $AzLabServicesUtilManagementName = "Management.psm1"
+    $AzLabServicesUtilName = "Utils.psm1"
+    $AzLabServicesUtilSource = "https://raw.githubusercontent.com/RogerBestMsft/azure-devtestlab-activedirectoryjoin/devModules/src/modules/"
 
     # Load Management module
     $source = $AzLabServicesUtilSource + $AzLabServicesUtilManagementName
@@ -95,21 +95,22 @@ try {
     Import-Module $target -Global
 
     # Load Utils and Az.LabServices modules
-    Import-RemoteModule -Source $AzLabServicesModuleSource -ModuleName $AzLabServicesModuleName
     Import-RemoteModule -Source $AzLabServicesUtilSource -ModuleName $AzLabServicesUtilName
+    Import-RemoteModule -Source $AzLabServicesModuleSource -ModuleName $global:AzLabServicesModuleName
+    
 
     # TODO Download secondary scripts
-    $global:AzLabServicesScriptsSource = "https://raw.githubusercontent.com/RogerBestMsft/azure-devtestlab-activedirectoryjoin/devModules/src/scripts/"
-    $global:JoinAzLabADStudentRenameVmScriptName = "Join-AzLabADStudent_RenameVm.ps1"
-    $global:JoinAzLabADStudentJoinVmScriptName = "Join-AzLabADStudent_JoinVm.ps1"
-    $global:JoinAzLabADStudentAddStudentScriptName = "Join-AzLabADStudent_AddStudent.ps1"
-    $global:JoinAzLabADStudentEnrollMDMScriptName = "Join-AzLabADStudent_EnrollMDM.ps1"
+    $AzLabServicesScriptsSource = "https://raw.githubusercontent.com/RogerBestMsft/azure-devtestlab-activedirectoryjoin/devModules/src/scripts/"
+    #$JoinAzLabADStudentRenameVmScriptName = "Join-AzLabADStudent_RenameVm.ps1"
+    #$JoinAzLabADStudentJoinVmScriptName = "Join-AzLabADStudent_JoinVm.ps1"
+    #$JoinAzLabADStudentAddStudentScriptName = "Join-AzLabADStudent_AddStudent.ps1"
+    #$JoinAzLabADStudentEnrollMDMScriptName = "Join-AzLabADStudent_EnrollMDM.ps1"
 
     #$modulePath = Join-Path -Path (Resolve-Path ./) -ChildPath $ModuleName
-    Download-File -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentRenameVmScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentRenameVmScriptName)
-    Download-File -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentJoinVmScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentJoinVmScriptName)
-    Download-File -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentAddStudentScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentAddStudentScriptName)
-    Download-File -Source $AzLabServicesScriptsSource + $JoinAzLabADStudentEnrollMDMScriptName -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $JoinAzLabADStudentEnrollMDMScriptName)
+    Get-FileFromURI -Source ($AzLabServicesScriptsSource + $global:JoinAzLabADStudentRenameVmScriptName) -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $global:JoinAzLabADStudentRenameVmScriptName)
+    Get-FileFromURI -Source ($AzLabServicesScriptsSource + $global:JoinAzLabADStudentJoinVmScriptName) -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $global:JoinAzLabADStudentJoinVmScriptName)
+    Get-FileFromURI -Source ($AzLabServicesScriptsSource + $global:JoinAzLabADStudentAddStudentScriptName) -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $global:JoinAzLabADStudentAddStudentScriptName)
+    Get-FileFromURI -Source ($AzLabServicesScriptsSource + $global:JoinAzLabADStudentEnrollMDMScriptName) -ModulePath (Join-Path -Path (Resolve-Path ./) -ChildPath $global:JoinAzLabADStudentEnrollMDMScriptName)
 #
 
     Write-Output "Getting information on the currently running Template VM"
@@ -167,49 +168,3 @@ finally {
     Write-Output "Exiting with $ExitCode" 
     exit $ExitCode
 }
-
-# function Import-RemoteModule {
-#     param(
-#         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Web source of the psm1 file")]
-#         [ValidateNotNullOrEmpty()]
-#         [string] $Source,
-#         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the module")]
-#         [ValidateNotNullOrEmpty()]
-#         [string] $ModuleName,
-#         [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true, HelpMessage = "Whether to update and replace an existing psm1 file")]
-#         [switch]
-#         $Update = $false
-#     )
-  
-#     $modulePath = Join-Path -Path (Resolve-Path ./) -ChildPath $ModuleName
-  
-#     if ($Update -Or !(Test-Path -Path $modulePath)) {
-
-#         Download-Scripts -Source $Source -ModuleName $ModuleName -ModulePath $modulePath
-#         #Remove-Item -Path $modulePath -ErrorAction SilentlyContinue
-
-#         #$WebClient = New-Object System.Net.WebClient
-#         #WebClient.DownloadFile($Source, $modulePath)
-#     }
-    
-#     Import-Module $modulePath
-# }
-
-# function Download-Scripts {
-#     param(
-#         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Web source of the psm1 file")]
-#         [ValidateNotNullOrEmpty()]
-#         [string] $Source,
-#         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the module")]
-#         [ValidateNotNullOrEmpty()]
-#         [string] $ModuleName,
-#         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the module")]
-#         [ValidateNotNullOrEmpty()]
-#         [string] $ModulePath
-#     )
-
-#     Remove-Item -Path $ModulePath -ErrorAction SilentlyContinue
-
-#     $WebClient = New-Object System.Net.WebClient
-#     $WebClient.DownloadFile($Source, $ModulePath)
-# }
